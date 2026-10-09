@@ -1,0 +1,5 @@
+2026-10-07 09:40:10 192.168.1.50 "GET /search?q=' OR 1=1--" "SQL Injection detected" "942100"
+2026-10-07 09:40:15 192.168.1.50 "GET /login?username=admin'--" "SQL Injection detected" "942110"
+2026-10-07 09:41:20 192.168.1.60 "GET /index.php?id=<script>alert(1)</script>" "XSS Attack detected" "941100"
+2026-10-07 09:42:05 192.168.1.70 "GET /admin" "Request allowed" "-"
+2026-10-07 09:43:30 192.168.1.80 "POST /upload" "File upload attack detected" "933160"

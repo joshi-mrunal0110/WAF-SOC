@@ -1,0 +1,6 @@
+Oct  7 09:30:01 server sshd[1234]: Accepted password for mrunal from 192.168.1.10 port 52144 ssh2
+Oct  7 09:31:15 server sshd[1235]: Failed password for admin from 192.168.1.50 port 52145 ssh2
+Oct  7 09:31:20 server sshd[1236]: Failed password for admin from 192.168.1.50 port 52146 ssh2
+Oct  7 09:31:25 server sshd[1237]: Failed password for admin from 192.168.1.50 port 52147 ssh2
+Oct  7 09:32:10 server sshd[1238]: Failed password for root from 192.168.1.50 port 52148 ssh2
+Oct  7 09:33:05 server sshd[1239]: Accepted password for mrunal from 192.168.1.10 port 52149 ssh2
