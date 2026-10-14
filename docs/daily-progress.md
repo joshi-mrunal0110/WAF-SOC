@@ -234,3 +234,67 @@ Only record issues that actually occurred. Add new entries after each developmen
 
 ### Issues encountered
 - No test failures were reported in this run.
+
+### WAF-SOC Lab — Real WAF Integration
+
+**Date:** 13 October 2026
+
+**Work completed**
+- Configured a Kali Linux VM with VMware Host-only networking and a separate NAT adapter.
+- Installed Nginx, the ModSecurity v3 Nginx connector, and OWASP Core Rule Set (CRS).
+- Configured ModSecurity in `DetectionOnly` mode.
+- Configured the CRS include file and enabled ModSecurity for the default Nginx virtual host.
+- Verified that the ModSecurity audit log exists at `/var/log/nginx/modsec_audit.log`.
+- Sent a SQL injection test request to the local Nginx server.
+
+**Verified detection evidence**
+- Test URL: `http://127.0.0.1/?id=1%20OR%201=1`
+- HTTP response: `200 OK`
+- CRS rule ID: `942100`
+- Detection: SQL injection pattern identified by libinjection.
+- Anomaly evaluation rule: `949110`
+- Anomaly score reported: `8`
+- Audit log: `/var/log/nginx/modsec_audit.log`
+
+**Result**
+
+The OWASP CRS detected the SQL injection test pattern and recorded the detection in the ModSecurity audit log. The request returned HTTP 200 while ModSecurity was configured in `DetectionOnly` mode. This confirms detection and logging for this test case; it does not yet verify blocking mode or integration with the Python collector.
+
+**Concepts learned**
+- Difference between detection-only and blocking modes.
+- How OWASP CRS rules identify suspicious HTTP requests.
+- How ModSecurity audit logs provide evidence for security investigations.
+- Why HTTP response status and WAF detection results must be evaluated separately.
+
+### Real ModSecurity Parser Integration
+
+**Date:** 14 October 2026
+
+**Work completed**
+- Created a Python parser for ModSecurity serial audit logs.
+- Parsed real audit-log transaction sections A, B, F, H, and Z.
+- Extracted timestamps, source IP addresses, HTTP methods, request URIs, response status codes, rule IDs, detection messages, and severity levels.
+- Successfully parsed three security events from the saved ModSecurity sample log.
+- Removed temporary debugging statements after verifying the parser.
+- Ran the complete unit test suite successfully: 18 tests passed.
+
+**Verified detection evidence**
+- Rule `920350`: Numeric IP address in the Host header.
+- Rule `942100`: SQL injection detected via libinjection.
+- Rule `949110`: Inbound anomaly score exceeded, with a total anomaly score of 8.
+- Source IP: `127.0.0.1`
+- HTTP response status: `200`
+
+**Result**
+
+The WAF-SOC project can now parse the saved real ModSecurity audit-log sample and convert its rule messages into normalized security events. All 18 unit tests pass.
+
+**Current limitation**
+
+The parser has been tested against a saved audit-log sample. Continuous collection of new audit-log entries from the Kali VM into the Python application has not yet been implemented.
+
+**Concepts learned**
+- Structure of ModSecurity serial audit logs.
+- How OWASP CRS rule IDs and severity values appear in audit messages.
+- Difference between a WAF detection and an HTTP response status.
+- Importance of validating real-world input in addition to unit tests.
