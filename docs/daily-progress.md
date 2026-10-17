@@ -298,3 +298,58 @@ The parser has been tested against a saved audit-log sample. Continuous collecti
 - How OWASP CRS rule IDs and severity values appear in audit messages.
 - Difference between a WAF detection and an HTTP response status.
 - Importance of validating real-world input in addition to unit tests.
+
+### Real ModSecurity Parser Integration
+
+**Date:** 17 October 2026
+
+**Work completed**
+- Created a dedicated parser for ModSecurity Serial audit logs.
+- Added unit tests covering empty input, request metadata, detection messages, severity, and multiple rule messages.
+- All 4 dedicated parser tests passed.
+- Parsed the saved real audit-log sample successfully and extracted 3 detection events.
+
+**Verified detections**
+- Rule `920350`: Numeric IP address in Host header — MEDIUM.
+- Rule `942100`: SQL injection detected via libinjection — HIGH.
+- Rule `949110`: Inbound anomaly score exceeded, total score 8 — HIGH.
+
+**Result**
+
+The Python parser successfully converted real ModSecurity audit-log entries into the project's normalized event schema. All three events recorded HTTP status 200 because the WAF was operating in DetectionOnly mode. This validates parsing and detection-event extraction, but does not yet establish end-to-end collector integration or blocking behavior.
+
+**Concepts learned**
+- How ModSecurity audit-log sections contain request, response, and rule-message information.
+- How multiple rule messages can be extracted from a single transaction.
+- Why WAF rule severity and HTTP response status are separate fields.
+
+### Real ModSecurity Collector Integration
+
+**Date:** 17 October 2026
+
+**Work completed**
+- Integrated the real ModSecurity audit-log parser with the existing WAF-SOC log collector.
+- Updated the collector to process real ModSecurity events alongside Nginx, authentication, and simulated WAF events.
+- Normalized real ModSecurity detections using the common event schema.
+- Saved all collected events to `logs/normalized_events.json`.
+- Verified that three real ModSecurity detections were present in the normalized output.
+
+**Verified results**
+- Total normalized events: 20
+- Nginx events: 6
+- Authentication events: 6
+- Simulated WAF events: 5
+- Real ModSecurity events: 3
+- SQL injection rule: `942100`
+- Inbound anomaly evaluation rule: `949110`
+- Output file: `logs/normalized_events.json`
+
+**Concepts learned**
+- How real ModSecurity audit logs are parsed into structured events.
+- How multiple security rules can generate detections for a single HTTP request.
+- How different log sources can share a common event schema.
+- Why a logged WAF detection does not automatically mean a request was blocked.
+
+**Result**
+
+The collector successfully processed the real ModSecurity sample and saved its three detections alongside the existing events. The real WAF sample is now integrated into the collection pipeline. Live collection from the Kali VM is not yet configured.
